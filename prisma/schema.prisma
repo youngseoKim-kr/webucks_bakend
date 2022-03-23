@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String
+  created_at DateTime @default(now())
+
+  Product Product[]
+  @@map("categories")
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  korean_name  String   @unique
+  english_name String
+  category_id  Int
+  created_at   DateTime @default(now())
+
+  category Category @relation(fields: [category_id], references: [id])
+
+  Product_Image  Product_Image[]
+  ProductAllergy ProductAllergy[]
+  Nutrition      Nutrition?
+  @@index([category_id], name: "category_id")
+  @@map("products")
+}
+
+model Product_Image {
+  id         Int      @id @default(autoincrement())
+  image_url  String
+  product_id Int
+  created_at DateTime @default(now())
+
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@index([product_id], name: "product_id")
+  @@map("product_images")
+}
+
+model Allergy {
+  id         Int       @id @default(autoincrement())
+  name       String
+  created_at DateTime? @default(now())
+
+  ProductAllergy ProductAllergy[]
+  @@map("allergies")
+}
+
+model ProductAllergy {
+  id         Int       @id @default(autoincrement())
+  product_id Int
+  allergy_id Int
+  created_at DateTime? @default(now())
+
+  Product Product @relation(fields: [product_id], references: [id])
+  Allergy Allergy @relation(fields: [allergy_id], references: [id])
+
+  @@index([product_id], name: "product_id")
+  @@index([allergy_id], name: "allergy_id")
+  @@map("products_allergies")
+}
+
+model Nutrition {
+  id         Int       @id @default(autoincrement())
+  product_id Int       @unique
+  caffein    Float
+  fat        Float
+  sugar      Float
+  sodium     Float
+  created_at DateTime? @default(now())
+
+  Product Product @relation(fields: [product_id], references: [id])
+
+  @@index([product_id], name: "product_id")
+  @@map("nutritions")
+}
+
+model User {
+  id            Int     @id @default(autoincrement())
+  email         String  @unique
+  password      String
+  username      String?
+  address       String?
+  phone_number  String?
+  policy_agreed Boolean @default(true)
+
+  @@map("users")
+}
+
+// model Categorie_1 {
+//   id   Int    @id @default(autoincrement())
+//   name String
+
+//   Product_1 Product_1[]
+//   @@map("categories_1")
+// }
+
+// model Product_1 {
+//   id           Int    @id @default(autoincrement())
+//   korean_name  String
+//   english_name String
+//   categorie_Id Int
+//   imageurl     String
+
+//   Categorie_1    Categorie_1     @relation(fields: [categorie_Id], references: [id])
+//   Product_detail Product_detail?
+//   @@map("product_1")
+// }
+
+// model Product_detail {
+//   id           Int    @id @default(autoincrement())
+//   korean_name  String
+//   english_name String
+//   description  String
+//   imageURL     String
+//   allergens    String
+//   calories     Float
+//   fat          Float
+//   sodium       Float
+//   protein      Float
+//   caffeine     Float
+//   product_id   Int    @unique
+
+//   Product_1 Product_1 @relation(fields: [product_id], references: [id])
+//   @@map("products_details")
+// }
