@@ -1,6 +1,15 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const findUser = async (id) => {
+  const findUser = await prisma.$queryRaw`
+  SELECT id 
+  FROM users 
+  where id = ${id};`;
+
+  return findUser;
+};
+
 const getUserByEmail = async (email) => {
   //이미 가입했는지 확인 //CUSTOM_ERROR
   const selectUser = await prisma.$queryRaw`
@@ -58,4 +67,5 @@ module.exports = {
   getUser,
   updateUser,
   selectUser_2,
+  findUser,
 };

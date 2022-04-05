@@ -10,16 +10,19 @@ const prisma = new PrismaClient();
 
 const app = express();
 app.use(express.json());
+
 app.use(routes);
+
 app.get("/", (req, res) => {
   res.json({ message: "/endpoint" });
 });
 
 const server = http.createServer(app);
+const PORT = process.env.PORT;
 
 const start = async () => {
   try {
-    server.listen(8000, () => console.log(`Server is listiening on 8000`));
+    server.listen(8000, () => console.log(`Server is listiening on ${PORT}`));
   } catch (err) {
     console.error(err);
     await prisma.$disconnect();

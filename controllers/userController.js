@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (email === undefined || password === undefined) {
-      const error = new Error("KEY_ERROR");
+      const error = new Error("client input invalid");
       error.statusCode = 400;
       throw error;
     }

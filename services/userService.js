@@ -3,6 +3,12 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { UNSAFE_NavigationContext } = require("react-router-dom");
 
+const findUser = async (id) => {
+  const findUser = await userDao.findUser(id);
+
+  return findUser;
+};
+
 const signUp = async (email, password) => {
   // 비밀번호가 짧을 때
   if (password.length < 8) {
@@ -34,8 +40,8 @@ const login = async (email, password) => {
   const selectUser = await userDao.selectUser(email, password);
 
   if (selectUser[0] == undefined) {
-    const error = new Error("NOT_A_USER");
-    error.statusCode = 404;
+    const error = new Error("client input invalid");
+    error.statusCode = 400;
     throw error;
   }
   //비밀번호 체크
@@ -50,7 +56,7 @@ const login = async (email, password) => {
     // });
     return token;
   } else {
-    const error = new Error("WRONG_PASSWORD");
+    const error = new Error("client input invalid");
     error.statusCode = 400;
     throw error;
   }
@@ -107,4 +113,4 @@ const Verification = async (token) => {
   return selectUser;
 };
 
-module.exports = { signUp, login, remove, get, put, Verification };
+module.exports = { signUp, login, remove, get, put, Verification, findUser };

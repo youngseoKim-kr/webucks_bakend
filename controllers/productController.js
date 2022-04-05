@@ -16,7 +16,8 @@ const categories = async (req, res, next) => {
 
 const products = async (req, res, next) => {
   try {
-    const selectproducts = await productService.products();
+    const { id } = req.params;
+    const selectproducts = await productService.products(id);
 
     res.status(201).json({
       selectproducts,
@@ -38,4 +39,49 @@ const detail = async (req, res, next) => {
   }
 };
 
-module.exports = { categories, products, detail };
+const likes = async (req, res, next) => {
+  try {
+    const { user_id, product_id } = req.body;
+    foundUser = req.foundUser;
+
+    if (user_id === undefined || product_id === undefined) {
+      return res.status(400).json({ message: "KEY_ERROR" });
+    }
+    const likes = await productService.likes(user_id, product_id);
+
+    if (likes == 0) {
+      res.status(201).json({
+        message: "update_SUCESS",
+        foundUser,
+      });
+    } else {
+      res.status(201).json({
+        message: "insert_SUCESS",
+        foundUser,
+      });
+    }
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ message: err.message });
+  }
+};
+
+const commentInsert = async (req, res, next) => {
+  try {
+    const { product_id, content } = req.body;
+    const id = req.foundUser;
+
+    const commentInsert = await productService.commentInsert(
+      product_id,
+      content,
+      id
+    );
+
+    res.status(201).json({
+      message: "insert_SUCESS",
+    });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ message: err.message });
+  }
+};
+
+module.exports = { categories, products, detail, likes, commentInsert };
